@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    //"lib": ["es6"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noEmitHelpers": false,
+    "strictNullChecks": false,
+    "baseUrl": "./src",
+    "noImplicitAny": false,
+    "declaration": true,
+    //"outFile": "./dist/index.js",
+    "outDir": "./dist",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}
