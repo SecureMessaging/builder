@@ -5,7 +5,7 @@ import * as express from 'express';
 let app = express();
 
 app.get('/build', (req, res) => {
-    let project = req.params['project'];
+    let project = req.query['project'];
     res.writeHead(200, { "Content-Type": "text/event-stream", "Cache-control": "no-cache" });
 
     if(!project) {
