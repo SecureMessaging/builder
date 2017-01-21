@@ -43,6 +43,7 @@ export class Builder {
 
     private git: Git;
     public log: ReplaySubject<string>;
+    private logFile: any;
 
     constructor() {
         this.git = new Git();
@@ -57,6 +58,8 @@ export class Builder {
         this.emitLog('Cloning ' + repo);
         await this.git.clone(repo);
         await this.git.checkoutBranch(branch);
+
+        this.logFile = require('simple-node-logger').createSimpleLogger(this.git.build_path + '/builder.log');
 
         let bashCommand = `
         export BUILD_DIR="${this.git.build_path}"
@@ -116,6 +119,7 @@ export class Builder {
 
     private emitLog(text: string): void {
         console.log(text);
+        this.logFile.log('info', text);
         this.log.next(text + '\n\n');
     }
 
