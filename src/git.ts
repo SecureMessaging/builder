@@ -9,7 +9,7 @@ export class Git {
 
     async clone(repo_url: string): Promise<any> {
         this.repo_url = repo_url;
-        this.build_path = tmp.dirSync().name;
+        this.build_path = tmp.dirSync({unsafeCleanup: true}).name;
         console.log(this.build_path);
         this.repo = await NGit.Clone(this.repo_url, this.build_path);
     }
