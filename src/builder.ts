@@ -74,6 +74,7 @@ export class Builder {
         `;
 
         await this.runBashCommand(bashCommand);
+        await this.cleanup();
         this.logFile.end('DONE');
     }
 
@@ -86,6 +87,26 @@ export class Builder {
               console.log(error);
               //this.log.next(error);
               this.log.next("Finished");
+              resolve();
+          });
+          child.stdout.on('data', (data) => {
+              console.log(data.toString());
+              this.log.next(data.toString());
+          });
+
+          child.stderr.on('data', (data) => {
+              console.log(data.toString()); 
+              this.log.next(data.toString());
+          });
+          
+          //cmd.get( bashCmd, x => resolve(x))
+      })
+    }
+
+    private cleanup(): Promise<any> {
+      return new Promise((resolve, reject) => {
+          
+          let child = exec(`rm -rf ${this.git.build_path}`, (error, stdout, stderr) => {
               resolve();
           });
           child.stdout.on('data', (data) => {
