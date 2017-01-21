@@ -2,7 +2,7 @@ import { Git } from './git';
 import { readJSON } from 'fs-promise';
 import { spawn, SpawnOptions, exec } from 'child_process';
 import { ReplaySubject } from 'rxjs';
-
+var fs = require('fs');
 var cmd = require('node-cmd');
 
 export class Builder {
@@ -59,7 +59,7 @@ export class Builder {
         await this.git.clone(repo);
         await this.git.checkoutBranch(branch);
 
-        this.logFile = require('simple-node-logger').createSimpleLogger(this.git.build_path + '/builder.log');
+        this.logFile = fs.createWriteStream(this.git.build_path + '/builder.log', {'flags': 'a'});        
 
         let bashCommand = `
         export BUILD_DIR="${this.git.build_path}"
@@ -74,7 +74,7 @@ export class Builder {
         `;
 
         await this.runBashCommand(bashCommand);
-
+        this.logFile.end('DONE');
     }
 
 
@@ -82,8 +82,9 @@ export class Builder {
     private runBashCommand(bashCmd: string): Promise<any> {
       return new Promise((resolve, reject) => {
           
-          let child = exec(bashCmd, (error, stdout, stderr) => {
-              //console.log(error, stdout, stderr);
+          let child = exec(bashCmd,{maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
+              console.log(error);
+              //this.log.next(error);
               this.log.next("Finished");
               resolve();
           });
@@ -119,7 +120,9 @@ export class Builder {
 
     private emitLog(text: string): void {
         console.log(text);
-        this.logFile.log('info', text);
+        if(this.logFile) {
+            this.logFile.write(text + '\n\n');
+        }
         this.log.next(text + '\n\n');
     }
 
